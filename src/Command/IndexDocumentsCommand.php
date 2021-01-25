@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace LarsNieuwenhuizen\EsConnector\Console\Command;
+namespace LarsNieuwenhuizen\EsConnector\Command;
 
 use LarsNieuwenhuizen\EsConnector\Service\DocumentIndexer;
 use LarsNieuwenhuizen\EsConnector\Service\IndexManager;

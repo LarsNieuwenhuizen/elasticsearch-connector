@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace LarsNieuwenhuizen\EsConnector\Console\Command;
+namespace LarsNieuwenhuizen\EsConnector\Command;
 
 use LarsNieuwenhuizen\EsConnector\Service\IndexManager;
 use Symfony\Component\Console\Command\Command;
@@ -10,7 +10,7 @@ use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-final class PurgeStaleIndicesCommand extends Command
+final class BuildIndicesCommand extends Command
 {
 
     /**
@@ -18,8 +18,8 @@ final class PurgeStaleIndicesCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('search:purge-stale-indices')
-            ->setDescription('Purge stale indices');
+        $this->setName('search:build-indices')
+            ->setDescription('(Re)construct indices for Elasticsearch for all index eligible modules');
     }
 
     /**
@@ -29,14 +29,12 @@ final class PurgeStaleIndicesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $cliOutput = new SymfonyStyle($input, $output);
-        $cliOutput->title('Purge stale Elasticsearch indices');
+        $output = new SymfonyStyle($input, $output);
+        $output->title('Create elasticsearch indices');
 
-        $logger = new ConsoleLogger(
-            $output
-        );
+        $logger = new ConsoleLogger($output);
 
         $indexManager = new IndexManager($logger);
-        $indexManager->purgeStaleIndices();
+        $indexManager->createIndices(time() . '-');
     }
 }
