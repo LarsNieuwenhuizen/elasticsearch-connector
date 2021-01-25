@@ -1,0 +1,31 @@
+<?php
+declare(strict_types = 1);
+
+namespace LarsNieuwenhuizen\EsConnector\Domain\Model\Query;
+
+class WildcardQueryPart implements QueryPart
+{
+
+    private string $field;
+
+    private string $value;
+
+    public static function create(string $field, string $value): self
+    {
+        $object = new static();
+        $object->field = $field;
+        $object->value = $value;
+        return $object;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'wildcard' => [
+                $this->field => [
+                    'value' => $this->value
+                ]
+            ]
+        ];
+    }
+}
