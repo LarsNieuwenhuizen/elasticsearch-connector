@@ -3,12 +3,12 @@ declare(strict_types = 1);
 
 namespace LarsNieuwenhuizen\EsConnector\Domain\Model;
 
-abstract class AbstractIndexableModel implements Indexable
+abstract class AbstractIndexableDocumentModel implements IndexableDocumentInterface
 {
 
     abstract public function getModuleName(): string;
 
-    abstract public static function createFromArrayForIndexing(array $data): Indexable;
+    abstract public static function createFromArrayForIndexing(array $data): IndexableDocumentInterface;
 
     public function toIndexStructureArray(?string $indexPrefix = null): array
     {
@@ -18,6 +18,4 @@ abstract class AbstractIndexableModel implements Indexable
             'body' => $this->getIndexBodyStructure()
         ];
     }
-
-    abstract public function getDocumentsToIndex(): IndexableModelCollection;
 }

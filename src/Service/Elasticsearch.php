@@ -9,6 +9,7 @@ use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use FilesystemIterator;
 use Neos\Utility\Arrays;
+use Symfony\Component\Yaml\Yaml;
 
 class Elasticsearch
 {
@@ -22,7 +23,8 @@ class Elasticsearch
     public function __construct()
     {
         $this->indexConfigurationCollection = new IndexConfigurationCollection();
-
+        $elasticsearchConfigurationFilePath = \getenv('ELASTICSEARCH_CONFIGURATION_FILEPATH');
+        $this->configuration = Yaml::parseFile($elasticsearchConfigurationFilePath)['Elasticsearch'];
         $this->loadIndexConfigurations();
         $this->client = ClientBuilder::fromConfig([
             'hosts' => Arrays::getValueByPath($this->configuration, 'hosts')
@@ -51,11 +53,11 @@ class Elasticsearch
      */
     private function loadIndexConfigurations(): void
     {
-        $indexEligibleModules = Arrays::getValueByPath($this->configuration, 'indexEligibleModules');
-        foreach ($indexEligibleModules as $eligibleModule) {
-            $path = $this->getIndexConfigurationFilePathForModule($eligibleModule);
+        $indexConfigurationFiles = Arrays::getValueByPath($this->configuration, 'indexConfigurationFiles');
+        $configurationFilePathPrefix = Arrays::getValueByPath($this->configuration, 'indexConfigurationFilePathPrefix');
+        foreach ($indexConfigurationFiles as $configurationFile) {
             $files = new \GlobIterator(
-                $path,
+                $configurationFilePathPrefix . $configurationFile,
                 FilesystemIterator::KEY_AS_FILENAME | FilesystemIterator::CURRENT_AS_FILEINFO
             );
             foreach ($files as $file) {
@@ -64,15 +66,5 @@ class Elasticsearch
                 $this->indexConfigurationCollection->addIndexConfiguration($indexConfiguration);
             }
         }
-    }
-
-    /**
-     * @param string $module
-     * @return string
-     */
-    private function getIndexConfigurationFilePathForModule(string $module): string
-    {
-        return ROOT_PATH . 'App' . DIRECTORY_SEPARATOR . 'Module' . DIRECTORY_SEPARATOR . $module .
-            DIRECTORY_SEPARATOR . 'Search' . DIRECTORY_SEPARATOR . 'index_configuration*.yaml';
     }
 }
