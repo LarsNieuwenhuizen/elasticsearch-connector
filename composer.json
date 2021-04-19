@@ -19,7 +19,7 @@
     "require": {
         "php": "^7.4",
         "elasticsearch/elasticsearch": "^7.0",
-        "neos/utility-arrays": "^5.1",
+        "neos/utility-arrays": ">=5.1",
         "psr/log": "^1.1",
         "symfony/console": "^5.2",
         "symfony/yaml": "^5.2"
