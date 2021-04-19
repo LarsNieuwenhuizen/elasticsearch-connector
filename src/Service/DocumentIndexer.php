@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace LarsNieuwenhuizen\EsConnector\Service;
 
-use LarsNieuwenhuizen\EsConnector\Domain\Model\Indexable;
+use LarsNieuwenhuizen\EsConnector\Domain\Model\IndexableDocumentInterface;
 use LarsNieuwenhuizen\EsConnector\Domain\Model\IndexableModelCollection;
 use LarsNieuwenhuizen\EsConnector\Domain\Model\IndexConfiguration;
 use LarsNieuwenhuizen\EsConnector\Service\Elasticsearch;
@@ -19,11 +19,11 @@ class DocumentIndexer
 
     private string $indexPrefix;
 
-    public function __construct(string $indexPrefix, LoggerInterface $logger = null)
+    public function __construct(string $indexPrefix, Elasticsearch $elasticsearch, LoggerInterface $logger = null)
     {
         $this->indexPrefix = $indexPrefix;
         $this->logger = $logger ?? new NullLogger();
-        $this->elasticsearch = new Elasticsearch();
+        $this->elasticsearch = $elasticsearch;
     }
 
     /**
@@ -38,14 +38,14 @@ class DocumentIndexer
             );
 
             $this->indexDocumentCollection(
-                $configuration->getDocumentNodeIndexingModel()->getDocumentsToIndex()
+                $configuration->getDocumentNodeIndexingModel()->getDocumentRepository()->getAllDocuments()
             );
         }
     }
 
     private function indexDocumentCollection(IndexableModelCollection $documents): void
     {
-        /** @var Indexable $document */
+        /** @var IndexableDocumentInterface $document */
         foreach ($documents as $document) {
             $this->logger->debug(
                 \sprintf(
@@ -55,7 +55,7 @@ class DocumentIndexer
             );
 
             try {
-               /** @var Indexable $document */
+               /** @var IndexableDocumentInterface $document */
                 $this->elasticsearch->getClient()->index(
                     $document->toIndexStructureArray(
                         $this->indexPrefix

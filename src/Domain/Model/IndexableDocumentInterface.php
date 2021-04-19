@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace LarsNieuwenhuizen\EsConnector\Domain\Model;
 
-interface Indexable
+interface IndexableDocumentInterface
 {
 
     /**
@@ -26,7 +26,7 @@ interface Indexable
 
     public function getIndexName(): string;
 
-    public function getDocumentsToIndex(): IndexableModelCollection;
+    public function getDocumentRepository(): IndexableDocumentRepositoryInterface;
 
     public function toShortUuid();
 }

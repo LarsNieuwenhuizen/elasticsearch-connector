@@ -6,20 +6,27 @@ namespace LarsNieuwenhuizen\EsConnector\Service;
 use LarsNieuwenhuizen\EsConnector\Domain\Model\IndexConfiguration;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\Yaml\Yaml;
 
 class IndexManager
 {
 
     private Elasticsearch $elasticsearch;
 
-    private array $configuration;
-
     private LoggerInterface $logger;
 
-    public function __construct(LoggerInterface $logger = null)
+    public function __construct(Elasticsearch $elasticsearch, LoggerInterface $logger = null)
     {
         $this->logger = $logger ?? new NullLogger();
-        $this->elasticsearch = new Elasticsearch();
+        $this->elasticsearch = $elasticsearch;
+    }
+
+    /**
+     * @return Elasticsearch
+     */
+    public function getElasticsearch(): Elasticsearch
+    {
+        return $this->elasticsearch;
     }
 
     public function getIndices(): array
@@ -70,7 +77,7 @@ class IndexManager
     public function createIndices(string $indexPrefix): void
     {
         /** @var IndexConfiguration $configuration */
-        foreach ($this->elasticsearch->getIndexConfigurationCollection() as $configuration) {
+        foreach ($this->elasticsearch->getIndexConfigurationCollection() as $key => $configuration) {
             $indexName = $indexPrefix . $configuration->getIndexName();
             if (!$this->elasticsearch->getClient()->indices()->exists(['index' => $indexName])) {
                 $this->logger->info('Construct index ' . $indexName);
