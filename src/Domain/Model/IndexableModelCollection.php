@@ -18,7 +18,7 @@ class IndexableModelCollection implements IteratorAggregate, Countable
         $this->documents = new ArrayObject();
     }
 
-    public function addDocument(Indexable $document)
+    public function addDocument(IndexableDocumentInterface $document)
     {
         $this->documents->append($document);
     }

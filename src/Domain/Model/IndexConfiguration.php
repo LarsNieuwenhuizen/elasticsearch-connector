@@ -14,7 +14,7 @@ class IndexConfiguration
 
     private array $mapping;
 
-    private Indexable $documentNodeIndexingModel;
+    private IndexableDocumentInterface $documentNodeIndexingModel;
 
     public function getIndexName(): string
     {
@@ -31,7 +31,7 @@ class IndexConfiguration
         return $this->mapping;
     }
 
-    public function getDocumentNodeIndexingModel(): Indexable
+    public function getDocumentNodeIndexingModel(): IndexableDocumentInterface
     {
         return $this->documentNodeIndexingModel;
     }
